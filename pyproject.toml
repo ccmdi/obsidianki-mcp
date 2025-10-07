@@ -1,9 +1,18 @@
 [project]
-name = "mcp-server-demo"
+name = "obsidianki-mcp"
 version = "0.1.0"
-description = "Add your description here"
+description = "MCP server for generating flashcards using obsidianki"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "mcp[cli]>=1.16.0",
 ]
+
+[project.scripts]
+obsidianki-mcp = "direct:mcp.run"
+
+[tool.setuptools]
+py-modules = ["direct"]
+
+[tool.uv]
+package = true
