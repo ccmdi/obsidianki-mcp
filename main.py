@@ -4,6 +4,20 @@ from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP("obsidianki-mcp-direct")
 
+@mcp.prompt()
+def instructions() -> str:
+    """Instructions for using the flashcard generation tool"""
+    return """If the user does not specify a topic, default to generating flashcards about the user's notes (no query). If there is an active chat and the user says something like "can you generate flashcards about that", then use the query mode.
+    
+    When you successfully generate flashcards using the generate_flashcards tool, always:
+
+1. Tell the user how many flashcards were created
+2. Summarize what topics/content the flashcards cover
+3. Let them know the flashcards have been added to their Anki deck
+
+Example: "I've created 5 flashcards about Python list comprehensions and added them to your deck. The cards cover syntax, use cases, and common patterns."
+"""
+
 @mcp.tool()
 async def generate_flashcards(
     notes: Optional[list] = None,
@@ -15,14 +29,13 @@ async def generate_flashcards(
     """Generate flashcards using obsidianki.
 
     Args:
-        notes: Note patterns to process (e.g., ["frontend/*", "docs/*.md:3"]). Supports glob patterns with optional sampling using :N suffix.
+        notes: Note patterns to process (e.g., ["frontend/*", "docs/*.md:3"]). Supports glob patterns with optional sampling using :N suffix. You can leave this blank if the user does not specify.
         cards: Number of flashcards to generate (number of cards to generate, recommend 3-6 if set)
         query: Optional query/topic for generating content from chat. Important for generating new content rather than from existing notes.
         deck: Optional deck name (defaults to user's default deck)
         use_schema: If true, uses existing cards from the deck to match specific card format (--use-schema flag)
     """
     try:
-        # Build command
         cmd = ["obsidianki", "--mcp"]
 
         if cards is not None:
@@ -48,7 +61,6 @@ async def generate_flashcards(
             stdin=asyncio.subprocess.PIPE
         )
 
-        # Close stdin immediately so it doesn't wait for input
         process.stdin.close()
 
         output_lines = []
@@ -91,8 +103,7 @@ async def generate_flashcards(
             return f"TIMEOUT after 60s\n\nOutput before timeout:\n{result}"
 
     except Exception as e:
-        # mcp.logger.error(f"Error running obsidianki: {e}")
-            return f"Error: {str(e)}"
+        return f"Error: {str(e)}"
 
 if __name__ == "__main__":
     mcp.run()

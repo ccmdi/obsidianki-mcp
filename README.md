@@ -5,7 +5,7 @@ MCP server for generating flashcards using [obsidianki](https://github.com/ccmdi
 ## Prerequisites
 
 - [uv](https://docs.astral.sh/uv/getting-started/installation/)
-- [obsidianki](https://github.com/ccmdi/obsidianki) installed and available in PATH
+- [obsidianki](https://github.com/ccmdi/obsidianki) installed and available in PATH, >= 0.7
 
 ## Installation
 
@@ -21,7 +21,7 @@ Add to your Claude Desktop config file:
       "command": "uvx",
       "args": [
         "--from",
-        "git+https://github.com/your-username/obsidianki-mcp",
+        "git+https://github.com/ccmdi/obsidianki-mcp",
         "obsidianki-mcp"
       ]
     }

@@ -9,10 +9,10 @@ dependencies = [
 ]
 
 [project.scripts]
-obsidianki-mcp = "direct:mcp.run"
+obsidianki-mcp = "main:mcp.run"
 
 [tool.setuptools]
-py-modules = ["direct"]
+py-modules = ["main"]
 
 [tool.uv]
 package = true
