@@ -19,11 +19,7 @@ Add to your Claude Desktop config file:
   "mcpServers": {
     "obsidianki-mcp": {
       "command": "uvx",
-      "args": [
-        "--from",
-        "git+https://github.com/ccmdi/obsidianki-mcp",
-        "obsidianki-mcp"
-      ]
+      "args": ["obsidianki-mcp"]
     }
   }
 }
