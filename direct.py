@@ -4,21 +4,47 @@ from mcp.server.fastmcp import FastMCP
 mcp = FastMCP("obsidianki-mcp-direct")
 
 @mcp.tool()
-async def generate_flashcards(query: str) -> str:
+async def generate_flashcards(
+    notes: list[str] | None = None,
+    cards: int | None = None,
+    query: str | None = None,
+    deck: str | None = None,
+    use_schema: bool = False
+) -> str:
     """Generate flashcards using obsidianki with the --mcp flag (skips approval prompts). Runs until completion or 180s timeout.
 
     Args:
-        query: The query/topic for flashcard generation
+        notes: Note patterns to process (e.g., ["frontend/*", "docs/*.md:3"]). Supports glob patterns with optional sampling using :N suffix.
+        cards: Number of flashcards to generate (number of cards to generate, recommend 3-6 if set)
+        query: Optional query/topic for generating content from chat. Important for generating new content rather than from existing notes.
+        deck: Optional deck name (defaults to user's default deck)
+        use_schema: If true, uses existing cards from the deck to match specific card format (--use-schema flag)
     """
     try:
-        # Run obsidianki with --mcp flag to skip approval
-        cmd = ["obsidianki", "--mcp", "-q", query, "--cards", "1"]
+        # Build command
+        cmd = ["obsidianki", "--mcp"]
+
+        if cards is not None:
+            cmd.extend(["--cards", str(cards)])
+
+        if query:
+            cmd.extend(["-q", query])
+
+        if notes:
+            for note_pattern in notes:
+                cmd.extend(["--notes", note_pattern])
+
+        if deck:
+            cmd.extend(["--deck", deck])
+
+        if use_schema:
+            cmd.append("--use-schema")
 
         process = await asyncio.create_subprocess_exec(
             *cmd,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
-            stdin=asyncio.subprocess.PIPE  # Provide stdin to prevent hanging on input
+            stdin=asyncio.subprocess.PIPE
         )
 
         # Close stdin immediately so it doesn't wait for input
@@ -32,7 +58,8 @@ async def generate_flashcards(query: str) -> str:
                 if not line:
                     break
                 decoded = line.decode().strip()
-                output_lines.append(f"[STDOUT] {decoded}")
+                if decoded:
+                    output_lines.append(decoded)
 
         async def read_error():
             while True:
@@ -40,7 +67,8 @@ async def generate_flashcards(query: str) -> str:
                 if not line:
                     break
                 decoded = line.decode().strip()
-                output_lines.append(f"[STDERR] {decoded}")
+                if decoded:
+                    output_lines.append(decoded)
 
         # Start reading tasks
         read_task = asyncio.create_task(read_output())
