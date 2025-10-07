@@ -1,17 +1,18 @@
 import asyncio
+from typing import Optional
 from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP("obsidianki-mcp-direct")
 
 @mcp.tool()
 async def generate_flashcards(
-    notes: list[str] | None = None,
-    cards: int | None = None,
-    query: str | None = None,
-    deck: str | None = None,
+    notes: Optional[list] = None,
+    cards: Optional[int] = None,
+    query: Optional[str] = None,
+    deck: Optional[str] = None,
     use_schema: bool = False
 ) -> str:
-    """Generate flashcards using obsidianki with the --mcp flag (skips approval prompts). Runs until completion or 180s timeout.
+    """Generate flashcards using obsidianki.
 
     Args:
         notes: Note patterns to process (e.g., ["frontend/*", "docs/*.md:3"]). Supports glob patterns with optional sampling using :N suffix.
@@ -91,4 +92,7 @@ async def generate_flashcards(
 
     except Exception as e:
         # mcp.logger.error(f"Error running obsidianki: {e}")
-        return f"Error: {str(e)}"
+            return f"Error: {str(e)}"
+
+if __name__ == "__main__":
+    mcp.run()
