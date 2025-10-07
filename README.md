@@ -12,6 +12,7 @@ MCP server for generating flashcards using [obsidianki](https://github.com/ccmdi
 Add to your Claude Desktop config file:
 
 **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+
 **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
 ```json
